@@ -1,0 +1,521 @@
+
+<main class="dashboard-page">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-icon">T</span>
+      <span>TaskFlow</span>
+    </div>
+
+    <nav class="navigation">
+      <a class="nav-item active" routerLink="/dashboard">
+        <span>▦</span> Dashboard
+      </a>
+
+      
+<a
+  class="nav-item"
+  href="#tarefas"
+  (click)="scrollToTasks($event)"
+>
+  <span>☷</span> Minhas tarefas
+</a>
+
+      <button
+        type="button"
+        class="nav-item logout-button"
+        (click)="onSignOut()"
+        [disabled]="loadingLogout"
+      >
+        <span>↪</span>
+        {{ loadingLogout ? 'Saindo...' : 'Sair da conta' }}
+      </button>
+    </nav>
+
+    @if (logoutError) {
+      <p class="feedback-error" role="alert">
+        {{ logoutError }}
+      </p>
+    }
+
+    <div class="sidebar-footer">
+      Organize seu tempo.<br />
+      Simplifique sua rotina.
+    </div>
+  </aside>
+
+  <section class="main-content">
+    <header class="page-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Acompanhe suas tarefas e organize seu dia.</p>
+      </div>
+
+      <span class="user-avatar">U</span>
+    </header>
+
+    <section class="welcome">
+      <h2>Olá! Bem-vindo ao TaskFlow 👋</h2>
+      <p>Vamos organizar suas atividades de hoje?</p>
+    </section>
+
+    <section class="stats-grid">
+      @for (stat of stats; track stat.label) {
+        <article class="stat-card">
+          <div class="stat-icon" [class]="stat.color">
+            {{ stat.icon }}
+          </div>
+
+          <div>
+            <p>{{ stat.label }}</p>
+            <strong>{{ stat.value }}</strong>
+          </div>
+        </article>
+      }
+    </section>
+
+    <section class="tasks-section" id="tarefas">
+      <div class="section-heading">
+        <div>
+          <h2>Minhas tarefas</h2>
+          <p>Suas atividades cadastradas.</p>
+        </div>
+
+        <div class="task-actions">
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="loadTasks()"
+            [disabled]="loadingTasks"
+          >
+            {{ loadingTasks ? 'Atualizando...' : 'Atualizar lista' }}
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            (click)="openCreateForm()"
+            [disabled]="!!editingTaskId"
+          >
+            {{ showCreateForm ? 'Cancelar' : '+ Nova tarefa' }}
+          </button>
+        </div>
+      </div>
+
+      @if (taskCreateSuccess) {
+        <p class="feedback-success" role="status">
+          {{ taskCreateSuccess }}
+        </p>
+      }
+
+      @if (taskCreateError) {
+        <p class="feedback-error" role="alert">
+          {{ taskCreateError }}
+        </p>
+      }
+
+      @if (taskActionError) {
+        <p class="feedback-error" role="alert">
+          {{ taskActionError }}
+        </p>
+      }
+
+      @if (taskActionSuccess) {
+        <p class="feedback-success" role="status">
+          {{ taskActionSuccess }}
+        </p>
+      }
+
+      @if (showCreateForm) {
+        <form class="task-form" (ngSubmit)="onCreateTask()">
+          <h3>Adicionar tarefa</h3>
+
+          @if (taskCreateError) {
+            <p class="feedback-error" role="alert">
+              {{ taskCreateError }}
+            </p>
+          }
+
+          <div class="form-field">
+            <label for="task-title">Título *</label>
+
+            <input
+              id="task-title"
+              name="title"
+              type="text"
+              [(ngModel)]="newTask.title"
+              placeholder="Ex.: Estudar Python"
+              maxlength="150"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="task-description">Descrição</label>
+
+            <textarea
+              id="task-description"
+              name="description"
+              [(ngModel)]="newTask.description"
+              placeholder="Descreva o que precisa ser feito"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="task-priority">Prioridade</label>
+
+              <select
+                id="task-priority"
+                name="priority"
+                [(ngModel)]="newTask.priority"
+              >
+                <option value="low">Baixa</option>
+                <option value="medium">Média</option>
+                <option value="high">Alta</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="task-status">Status</label>
+
+              <select
+                id="task-status"
+                name="status"
+                [(ngModel)]="newTask.status"
+              >
+                <option value="pending">Pendente</option>
+                <option value="in_progress">Em andamento</option>
+                <option value="completed">Concluída</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="task-due-date">Prazo</label>
+
+              <input
+                id="task-due-date"
+                name="dueDate"
+                type="date"
+                [(ngModel)]="newTask.dueDate"
+              />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="secondary-button"
+              (click)="openCreateForm()"
+              [disabled]="loadingCreateTask"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              class="primary-button"
+              [disabled]="loadingCreateTask"
+            >
+              {{
+                loadingCreateTask
+                  ? 'Salvando...'
+                  : 'Salvar tarefa'
+              }}
+            </button>
+          </div>
+        </form>
+      }
+
+      <!-- Pesquisa e filtros -->
+      <section class="task-filters">
+        <div class="filter-search">
+          <label for="taskSearch">Pesquisar tarefas</label>
+
+          <input
+            id="taskSearch"
+            type="search"
+            placeholder="Buscar por título ou descrição..."
+            [(ngModel)]="searchTerm"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label for="statusFilter">Status</label>
+
+          <select
+            id="statusFilter"
+            [(ngModel)]="statusFilter"
+          >
+            <option value="all">Todos os status</option>
+            <option value="pending">Pendente</option>
+            <option value="in_progress">Em andamento</option>
+            <option value="completed">Concluída</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="priorityFilter">Prioridade</label>
+
+          <select
+            id="priorityFilter"
+            [(ngModel)]="priorityFilter"
+          >
+            <option value="all">Todas as prioridades</option>
+            <option value="low">Baixa</option>
+            <option value="medium">Média</option>
+            <option value="high">Alta</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="sortOption">Ordenar por</label>
+
+          <select
+            id="sortOption"
+            [(ngModel)]="sortOption"
+          >
+            <option value="newest">Mais recentes</option>
+            <option value="oldest">Mais antigas</option>
+            <option value="dueDate">Prazo</option>
+          </select>
+        </div>
+
+        <button
+          type="button"
+          class="clear-filters-btn"
+          (click)="clearFilters()"
+        >
+          Limpar filtros
+        </button>
+      </section>
+
+      @if (loadingTasks) {
+        <p class="loading-message" role="status">
+          Carregando suas tarefas...
+        </p>
+      } @else if (taskLoadError) {
+        <div class="empty-state">
+          <h3>Não foi possível carregar as tarefas</h3>
+          <p>{{ taskLoadError }}</p>
+
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="loadTasks()"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      } @else if (tasks.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">☷</div>
+
+          <h3>Nenhuma tarefa cadastrada</h3>
+
+          <p>
+            Quando você cadastrar suas tarefas, elas aparecerão aqui.
+          </p>
+
+          <button
+            type="button"
+            class="primary-button"
+            (click)="openCreateForm()"
+          >
+            Criar minha primeira tarefa
+          </button>
+        </div>
+      } @else if (filteredTasks.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">⌕</div>
+
+          <h3>Nenhuma tarefa encontrada</h3>
+
+          <p>
+            Não encontramos tarefas com os termos de pesquisa
+            ou filtros selecionados.
+          </p>
+
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="clearFilters()"
+          >
+            Limpar pesquisa e filtros
+          </button>
+        </div>
+      } @else {
+        <div class="task-list">
+          @for (task of filteredTasks; track task.id) {
+            <article class="task-card">
+              @if (editingTaskId === task.id) {
+                <form
+                  class="task-form"
+                  (ngSubmit)="onUpdateTask()"
+                >
+                  <h3>Editar tarefa</h3>
+
+                  @if (taskEditError) {
+                    <p class="feedback-error" role="alert">
+                      {{ taskEditError }}
+                    </p>
+                  }
+
+                  <div class="form-field">
+                    <label [for]="'edit-title-' + task.id">
+                      Título *
+                    </label>
+
+                    <input
+                      [id]="'edit-title-' + task.id"
+                      name="editTitle"
+                      type="text"
+                      [(ngModel)]="editTask.title"
+                      maxlength="150"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label [for]="'edit-description-' + task.id">
+                      Descrição
+                    </label>
+
+                    <textarea
+                      [id]="'edit-description-' + task.id"
+                      name="editDescription"
+                      [(ngModel)]="editTask.description"
+                      rows="3"
+                    ></textarea>
+                  </div>
+
+                  <div class="form-grid">
+                    <div class="form-field">
+                      <label [for]="'edit-priority-' + task.id">
+                        Prioridade
+                      </label>
+
+                      <select
+                        [id]="'edit-priority-' + task.id"
+                        name="editPriority"
+                        [(ngModel)]="editTask.priority"
+                      >
+                        <option value="low">Baixa</option>
+                        <option value="medium">Média</option>
+                        <option value="high">Alta</option>
+                      </select>
+                    </div>
+
+                    <div class="form-field">
+                      <label [for]="'edit-status-' + task.id">
+                        Status
+                      </label>
+
+                      <select
+                        [id]="'edit-status-' + task.id"
+                        name="editStatus"
+                        [(ngModel)]="editTask.status"
+                      >
+                        <option value="pending">Pendente</option>
+                        <option value="in_progress">Em andamento</option>
+                        <option value="completed">Concluída</option>
+                      </select>
+                    </div>
+
+                    <div class="form-field">
+                      <label [for]="'edit-date-' + task.id">
+                        Prazo
+                      </label>
+
+                      <input
+                        [id]="'edit-date-' + task.id"
+                        name="editDueDate"
+                        type="date"
+                        [(ngModel)]="editTask.dueDate"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <button
+                      type="button"
+                      class="secondary-button"
+                      (click)="onCancelEdit()"
+                      [disabled]="updatingTask"
+                    >
+                      Cancelar
+                    </button>
+
+                    <button
+                      type="submit"
+                      class="primary-button"
+                      [disabled]="updatingTask"
+                    >
+                      {{
+                        updatingTask
+                          ? 'Salvando...'
+                          : 'Salvar alterações'
+                      }}
+                    </button>
+                  </div>
+                </form>
+              } @else {
+                <div class="task-information">
+                  <h3>{{ task.title }}</h3>
+
+                  @if (task.description) {
+                    <p>{{ task.description }}</p>
+                  }
+
+                  <span class="due-date">
+                    Prazo: {{ task.dueDate }}
+                  </span>
+                </div>
+
+                <div class="task-labels">
+                  <span
+                    class="priority"
+                    [class.high]="task.priority === 'Alta'"
+                    [class.medium]="task.priority === 'Média'"
+                    [class.low]="task.priority === 'Baixa'"
+                  >
+                    {{ task.priority }}
+                  </span>
+
+                  <span class="status">
+                    {{ task.status }}
+                  </span>
+                </div>
+
+                <!-- Ações exclusivas do card -->
+                <div class="task-card-actions">
+                  <button
+                    type="button"
+                    class="secondary-button"
+                    (click)="onEditTask(task)"
+                    [disabled]="!!editingTaskId || !!deletingTaskId"
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="secondary-button"
+                    (click)="onDeleteTask(task)"
+                    [disabled]="!!editingTaskId || !!deletingTaskId"
+                  >
+                    {{
+                      deletingTaskId === task.id
+                        ? 'Excluindo...'
+                        : 'Excluir'
+                    }}
+                  </button>
+                </div>
+              }
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </section>
+</main>

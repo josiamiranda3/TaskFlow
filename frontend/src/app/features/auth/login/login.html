@@ -1,0 +1,169 @@
+
+<main class="login-page">
+  <section class="login-showcase" aria-label="Apresentação do TaskFlow">
+    <a class="showcase-brand" routerLink="/login" aria-label="TaskFlow">
+      <span class="brand-icon">T</span>
+      <span>TaskFlow<span class="brand-dot">.</span></span>
+    </a>
+
+    <div class="showcase-content">
+      <span class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        SEU DIA, SOB CONTROLE
+      </span>
+
+      <h1>Menos caos.<br />Mais <span>conquistas.</span></h1>
+
+      <p class="showcase-description">
+        Transforme sua lista de tarefas em progresso real.
+        Organize suas prioridades e avance no que importa.
+      </p>
+
+      <div class="showcase-preview" aria-hidden="true">
+        <div class="preview-header">
+          <div>
+            <span class="preview-label">VISÃO GERAL</span>
+            <h2>Seu progresso</h2>
+          </div>
+          <span class="preview-period">Esta semana</span>
+        </div>
+
+        <div class="preview-progress">
+          <div class="progress-ring">
+            <div class="progress-ring-inner">
+              <strong>78%</strong>
+              <span>concluído</span>
+            </div>
+          </div>
+
+          <div class="preview-details">
+            <strong>Você está no caminho certo!</strong>
+            <span>Pequenos passos, grandes resultados.</span>
+            <div class="preview-bar">
+              <span></span>
+            </div>
+            <small>Seu próximo objetivo está mais perto.</small>
+          </div>
+        </div>
+
+        <div class="preview-bottom">
+          <span><i class="preview-check">✓</i> Foco no que importa</span>
+          <span class="preview-status">● Em progresso</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="showcase-footer">
+      <span>Organize. Priorize. Realize.</span>
+      <span>FEITO PARA IR MAIS LONGE <span class="footer-spark">✳</span></span>
+    </div>
+  </section>
+
+  <section class="login-panel">
+    <div class="login-card">
+      <div class="mobile-brand">
+        <span class="brand-icon">T</span>
+        <span>TaskFlow<span class="brand-dot">.</span></span>
+      </div>
+
+      <div class="login-heading">
+        <span class="welcome-label">BEM-VINDO DE VOLTA</span>
+        <h2>Que bom ter você aqui<span class="heading-dot">.</span></h2>
+        <p>Entre na sua conta e continue de onde parou.</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="5" width="18" height="14" rx="3"
+                  stroke="currentColor" stroke-width="1.7"/>
+                <path d="m4 7 8 6 8-6"
+                  stroke="currentColor" stroke-width="1.7"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              [(ngModel)]="email"
+              placeholder="voce@exemplo.com"
+              autocomplete="email"
+              required
+              email
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="4" y="10" width="16" height="11" rx="3"
+                  stroke="currentColor" stroke-width="1.7"/>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"
+                  stroke="currentColor" stroke-width="1.7"
+                  stroke-linecap="round"/>
+                <circle cx="12" cy="15" r="1.3" fill="currentColor"/>
+              </svg>
+            </span>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              [(ngModel)]="password"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+        </div>
+
+        <div
+          class="message error-message"
+          role="alert"
+          *ngIf="errorMessage"
+        >
+          <span class="message-icon" aria-hidden="true">!</span>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <div
+          class="message success-message"
+          role="status"
+          *ngIf="successMessage"
+        >
+          <span class="message-icon" aria-hidden="true">✓</span>
+          <span>{{ successMessage }}</span>
+        </div>
+
+        <button
+          class="login-button"
+          type="submit"
+          [disabled]="loading || loginForm.invalid"
+        >
+          <span>{{ loading ? 'Entrando...' : 'Entrar na minha conta' }}</span>
+          <span class="button-arrow" aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <div class="login-divider">
+        <span></span>
+        <span>SEU ESPAÇO DE PRODUTIVIDADE</span>
+        <span></span>
+      </div>
+
+      <p class="login-footer">
+        Um passo de cada vez. Você chega lá.
+      </p>
+    </div>
+
+    <p class="panel-legal">
+      TaskFlow <span>·</span> Organize seu tempo com propósito.
+    </p>
+  </section>
+</main>

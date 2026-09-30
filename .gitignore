@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Angular / Node
+node_modules/
+dist/
+.angular/
+
+# Testes e ferramentas
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Sistema operacional e editor
+.DS_Store
+Thumbs.db
+.vscode/

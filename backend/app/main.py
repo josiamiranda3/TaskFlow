@@ -20,7 +20,9 @@ app = FastAPI(
 # Permite que o Angular local acesse a API durante o desenvolvimento.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=["http://localhost:4200",
+    "https://task-flow-silk-beta.vercel.app",
+    ]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
